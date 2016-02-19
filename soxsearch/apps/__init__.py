@@ -25,3 +25,7 @@ def too_many_requests(e):
 def internal_server_error(e):
     return render_template('error/500.jinja2.html'), 500
 
+
+@app.route("/favicon.ico")
+def favicon():
+    return app.send_static_file("img/sox_logo.png")
