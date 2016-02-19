@@ -9,10 +9,10 @@ from searcher import Searcher
 from soxsearch import app
 
 searcher = Searcher(
-    "localhost",
-    "soxdb",
-    "shinny",
-    "henry/14",
+    "hostname",
+    "db",
+    "username",
+    "passwd",
     "utf8"
 )
 
