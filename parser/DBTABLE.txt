@@ -1,0 +1,8 @@
+# nodelist
+create table soxdb.nodelist(serviceID varchar(100) not null, nodeID varchar(180) not null, id varchar(100) not null, type varchar(100), latlng geometry, primary key(serviceID, nodeID));
+
+# nodelist_meta
+create table soxdb.nodelist_meta(serviceID varchar(100) not null, nodeID varchar(180) not null, id varchar(100) not null, type varchar(100), primary key(serviceID, nodeID));
+
+# nodelist_data
+create table soxdb.nodelist_data(serviceID varchar(100) not null, nodeID varchar(180) not null, id varchar(100) not null, latlng geometry, primary key(serviceID, nodeID));
