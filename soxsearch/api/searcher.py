@@ -26,10 +26,10 @@ class Searcher:
         sql = "select nodeID, id, X(latlng), Y(latlng) \
             from nodelist where MBRContains(GeomFromText \
             ('LineString(" \
-            + str(rangecorners["lng1"]) + " " \
-            + str(rangecorners["lat1"]) + ", " \
-            + str(rangecorners["lng2"]) + " " \
-            + str(rangecorners["lat2"]) + ")'), latlng)"
+            + str(rangecorners["lat1"]) + " " \
+            + str(rangecorners["lng1"]) + ", " \
+            + str(rangecorners["lat2"]) + " " \
+            + str(rangecorners["lng2"]) + ")'), latlng)"
 
 
         result = self.data_manager.fetchRecords(sql)
