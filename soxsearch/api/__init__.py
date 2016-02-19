@@ -29,19 +29,24 @@ def search_by_name():
     return json_result
 
 
-#@app.route('/api/search/location', methods=['GET'])
-#def search_by_location():
-#    latitude = request.args["lat"]
-#    longitude = request.args["lon"]
-#    radisu = request.args["radius"]
-#
-#    result = searcher.searchByLocation(
-#        latitude,
-#        longitude,
-#        radius
-#    )
-#
-#    return result
+@app.route('/api/search/location', methods=['GET'])
+def search_by_location():
+    latitude = float(request.args["lat"])
+    longitude = float(request.args["lng"])
+    radius = float(request.args["radius"])
+
+    result = searcher.searchByLocation(
+        latitude,
+        longitude,
+        radius
+    )
+
+    json_result = json.dumps(
+        result,
+        ensure_ascii=False
+    ).encode('utf8')
+
+    return json_result
 
 
 @app.route('/api/search/type', methods=['GET'])

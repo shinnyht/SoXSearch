@@ -1,5 +1,5 @@
 import re
-import soxsearch.utils
+from soxsearch.utils import dist2degree
 from soxsearch.utils.DBManager import DBManager
 
 class Searcher:
@@ -10,13 +10,34 @@ class Searcher:
         )
 
 
-    def searchByLocation(self, base_point, radius):
+    def searchByLocation(self, latitude, longitude, radius):
+        self.data_manager.EstablishDBConnection()
+
         # get how many degrees to move from the center point
         degrees_to_move = dist2degree(radius)
+        rangecorners = {
+            "lat1": latitude - degrees_to_move["lat"],
+            "lng1": longitude - degrees_to_move["lng"],
+            "lat2": latitude + degrees_to_move["lat"],
+            "lng2": longitude + degrees_to_move["lng"]
+        }
 
         # HERE MySQL search
+        sql = "select nodeID, id, X(latlng), Y(latlng) \
+            from nodelist where MBRContains(GeomFromText \
+            ('LineString(" \
+            + str(rangecorners["lng1"]) + " " \
+            + str(rangecorners["lat1"]) + ", " \
+            + str(rangecorners["lng2"]) + " " \
+            + str(rangecorners["lat2"]) + ")'), latlng)"
 
-        return True
+
+        result = self.data_manager.fetchRecords(sql)
+        json_responce = self.createNodeListJSON(result)
+
+        self.data_manager.CloseDBConnection()
+
+        return json_responce
 
 
     def searchByName(self, name):
@@ -27,20 +48,11 @@ class Searcher:
             from nodelist where nodeID regexp \
             '^.*" + name + ".*'"
         result = self.data_manager.fetchRecords(sql)
-
-        nodelist_json = {"nodelist": []}
-        for row in result:
-            node = {
-                "nodeID": row[0],
-                "id": row[1],
-                "latitude": row[2],
-                "longitude": row[3],
-            }
-            nodelist_json["nodelist"].append(node)
+        json_responce = self.createNodeListJSON(result)
 
         self.data_manager.CloseDBConnection()
 
-        return nodelist_json
+        return json_responce
 
 
     def searchByType(self, sensorType):
@@ -50,9 +62,16 @@ class Searcher:
         sql = "select nodeID, id, X(latlng), Y(latlng) \
             from nodelist where type='" + sensorType + "'"
         result = self.data_manager.fetchRecords(sql)
+        json_responce = self.createNodeListJSON(result)
 
+        self.data_manager.CloseDBConnection()
+
+        return json_responce
+
+
+    def createNodeListJSON(self, dictdata):
         nodelist_json = {"nodelist": []}
-        for row in result:
+        for row in dictdata:
             node = {
                 "nodeID": row[0],
                 "id": row[1],
@@ -60,7 +79,5 @@ class Searcher:
                 "longitude": row[3],
             }
             nodelist_json["nodelist"].append(node)
-
-        self.data_manager.CloseDBConnection()
 
         return nodelist_json
