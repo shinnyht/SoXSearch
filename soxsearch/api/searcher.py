@@ -10,6 +10,50 @@ class Searcher:
         )
 
 
+    def searchNodes(self, name, datatype, lat, lng, rad):
+        self.data_manager.EstablishDBConnection()
+        initial_param = False
+
+        SQL = "select nodeID, id, type, Y(latlng), X(latlng) \
+            from soxdb.nodelist "
+
+        if lat and lng and rad:
+            initial_param = True
+            degrees_to_move = dist2degree(rad)
+            rangecorners = {
+                "lat1": lat - degrees_to_move["lat"],
+                "lng1": lng - degrees_to_move["lng"],
+                "lat2": lat + degrees_to_move["lat"],
+                "lng2": lng + degrees_to_move["lng"]
+            }
+
+            SQL = SQL + "where MBRContains(GeomFromText \
+                ('LineString(" \
+                + str(rangecorners["lat1"]) + " " \
+                + str(rangecorners["lng1"]) + ", " \
+                + str(rangecorners["lat2"]) + " " \
+                + str(rangecorners["lng2"]) + ")'), latlng)"
+        if name:
+            if initial_param:
+                SQL = SQL + " and nodeID regexp '^.*" + name + ".*'"
+            else:
+                SQL = SQL + " where nodeID regexp '^.*" + name + ".*'"
+                initial_param = True
+
+        if datatype:
+            if initial_param:
+                SQL = SQL + " and type='" + datatype + "'"
+            else:
+                SQL = SQL + "where type='" + datatype + "'"
+
+        result = self.data_manager.fetchRecords(SQL)
+        json_responce = self.createNodeListJSON(result)
+
+        self.data_manager.CloseDBConnection()
+
+        return json_responce
+
+
     def searchByLocation(self, latitude, longitude, radius):
         self.data_manager.EstablishDBConnection()
 
@@ -23,7 +67,7 @@ class Searcher:
         }
 
         # HERE MySQL search
-        sql = "select nodeID, id, X(latlng), Y(latlng) \
+        sql = "select nodeID, id, type, Y(latlng), X(latlng) \
             from nodelist where MBRContains(GeomFromText \
             ('LineString(" \
             + str(rangecorners["lng1"]) + " " \
@@ -44,7 +88,7 @@ class Searcher:
         self.data_manager.EstablishDBConnection()
 
         # HERE MySQL search
-        sql = "select nodeID, id, X(latlng), Y(latlng) \
+        sql = "select nodeID, id, type, Y(latlng), X(latlng) \
             from nodelist where nodeID regexp \
             '^.*" + name + ".*'"
         result = self.data_manager.fetchRecords(sql)
@@ -59,7 +103,7 @@ class Searcher:
         self.data_manager.EstablishDBConnection()
 
         # HERE MySQL search
-        sql = "select nodeID, id, X(latlng), Y(latlng) \
+        sql = "select nodeID, id, type, Y(latlng), X(latlng) \
             from nodelist where type='" + sensorType + "'"
         result = self.data_manager.fetchRecords(sql)
         json_responce = self.createNodeListJSON(result)
@@ -75,8 +119,9 @@ class Searcher:
             node = {
                 "nodeID": row[0],
                 "id": row[1],
-                "latitude": row[2],
+                "datatype": row[2],
                 "longitude": row[3],
+                "latitude": row[4],
             }
             nodelist_json["nodelist"].append(node)
 
