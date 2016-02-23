@@ -12,13 +12,13 @@ class Searcher:
 
     def searchNodes(self, name, datatype, lat, lng, rad):
         self.data_manager.EstablishDBConnection()
-        initial_param = False
+        initial_param = True
 
         SQL = "select nodeID, id, type, Y(latlng), X(latlng) \
             from soxdb.nodelist "
 
-        if lat and lng and rad:
-            initial_param = True
+        if lat and lng:
+            initial_param = False
             degrees_to_move = dist2degree(rad)
             rangecorners = {
                 "lat1": lat - degrees_to_move["lat"],
@@ -35,16 +35,17 @@ class Searcher:
                 + str(rangecorners["lng2"]) + ")'), latlng)"
         if name:
             if initial_param:
-                SQL = SQL + " and nodeID regexp '^.*" + name + ".*'"
-            else:
                 SQL = SQL + " where nodeID regexp '^.*" + name + ".*'"
-                initial_param = True
+                initial_param = False
+            else:
+                SQL = SQL + " and nodeID regexp '^.*" + name + ".*'"
 
         if datatype:
             if initial_param:
-                SQL = SQL + " and type='" + datatype + "'"
-            else:
                 SQL = SQL + "where type='" + datatype + "'"
+                initial_param = False
+            else:
+                SQL = SQL + " and type='" + datatype + "'"
 
         result = self.data_manager.fetchRecords(SQL)
         json_responce = self.createNodeListJSON(result)
