@@ -114,7 +114,7 @@ class Searcher:
 
 
     def createNodeListJSON(self, dictdata):
-        nodelist_json = {"nodelist": []}
+        nodelist_json = {"nodelist": [], "total": 0, "time": 0}
         for row in dictdata:
             node = {
                 "nodeID": row[0],
@@ -124,5 +124,7 @@ class Searcher:
                 "latitude": row[4],
             }
             nodelist_json["nodelist"].append(node)
+
+        nodelist_json["total"] = len(dictdata)
 
         return nodelist_json

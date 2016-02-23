@@ -1,28 +1,33 @@
 import json
+import time
 
 from flask import (
     jsonify,
     render_template,
     request
 )
+from flask.ext.cors import CORS, cross_origin
 from searcher import Searcher
 from soxsearch import app
 
 searcher = Searcher(
-    "hostname",
-    "db",
-    "username",
-    "passwd",
+    "hostname", # set hostname
+    "db",       # set database
+    "username", # set MySQL username
+    "passwd",   # set password
     "utf8"
 )
 
 @app.route("/api/search", methods=["GET"])
+@cross_origin()
 def search_nodes():
     name = None
     datatype = None
     latitude = 0.0
     longitude = 0.0
     radius = 0.0
+
+    start = time.time()
 
     if request.args.has_key("name"):
         name = request.args["name"]
@@ -42,51 +47,9 @@ def search_nodes():
         longitude,
         radius
     )
-    json_result = json.dumps(
-        result,
-        ensure_ascii=False
-    ).encode("utf8")
 
-    return json_result
-
-
-@app.route("/api/search/name", methods=["GET"])
-def search_by_name():
-    name = request.args["name"]
-    result = searcher.searchByName(name)
-
-    json_result = json.dumps(
-        result,
-        ensure_ascii=False
-    ).encode("utf8")
-
-    return json_result
-
-
-@app.route("/api/search/location", methods=["GET"])
-def search_by_location():
-    latitude = float(request.args["lat"])
-    longitude = float(request.args["lng"])
-    radius = float(request.args["radius"])
-
-    result = searcher.searchByLocation(
-        latitude,
-        longitude,
-        radius
-    )
-
-    json_result = json.dumps(
-        result,
-        ensure_ascii=False
-    ).encode("utf8")
-
-    return json_result
-
-
-@app.route("/api/search/type", methods=["GET"])
-def search_by_type():
-    datatype = request.args["type"]
-    result = searcher.searchByType(datatype)
+    goal = time.time() - start
+    result["time"] = str(goal) + " sec"
 
     json_result = json.dumps(
         result,
