@@ -1,4 +1,5 @@
 from flask import Flask
+from flask.ext.cors import CORS
 
 def createApp():
     """ Flask application factory"""
@@ -9,6 +10,7 @@ def createApp():
 
 
 app = createApp()
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 import apps
 import api
