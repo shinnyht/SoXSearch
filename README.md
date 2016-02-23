@@ -20,19 +20,19 @@ You can search registered nodes in [sox.ht.sfc.keio.ac.jp][1] by
 
 #### Search by node name 
 
-> http://133.27.174.34/api/search?name=hogehoge
+> http://133.27.174.34/api/search?name=Tokyo
 
 #### Search by node type
 
-> http://133.27.174.34/api/search?type=mogemoge
+> http://133.27.174.34/api/search?type=scale
 
 #### Search by node location
 
-> http://133.27.174.34/api/search?lat=35.00&lng=135.00
+> http://133.27.174.34/api/search?lat=35.658581&lng=139.745433
  
 > additionally, nodes can be searched within a range(unit: meter) like below
 
-> http://133.27.174.34/api/search?lat=35.00&lng=135.00&radius=100
+> http://133.27.174.34/api/search?lat=35.658581&lng=139.745433&radius=1000
 
 
 ###jQuery Code Exmaple###
