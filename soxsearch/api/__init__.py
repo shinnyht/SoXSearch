@@ -36,8 +36,8 @@ def search_nodes():
     if request.args.has_key("radius"):
         radius = float(request.args["radius"])
     if set(("lat", "lng")) <= set(request.args):
-        latitude = request.args["lat"]
-        longitude = request.args["lng"]
+        latitude = float(request.args["lat"])
+        longitude = float(request.args["lng"])
 
 
     result = searcher.searchNodes(
