@@ -25,7 +25,7 @@ def search_nodes():
     datatype = None
     latitude = 0.0
     longitude = 0.0
-    radius = 0.0
+    radius = 10
 
     start = time.time()
 
