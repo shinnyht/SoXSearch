@@ -23,8 +23,8 @@ searcher = Searcher(
 def search_nodes():
     name = None
     datatype = None
-    latitude = 0.0
-    longitude = 0.0
+    latitude = None
+    longitude = None
     radius = 10
 
     start = time.time()
@@ -33,12 +33,12 @@ def search_nodes():
         name = request.args["name"]
     if request.args.has_key("type"):
         datatype = request.args["type"]
-    if request.args.has_key("lat"):
-        latitude = float(request.args["lat"])
-    if request.args.has_key("lng"):
-        longitude = float(request.args["lng"])
     if request.args.has_key("radius"):
         radius = float(request.args["radius"])
+    if set(("lat", "lng")) <= set(location):
+        latitude = request.args["lat"]
+        longitude = request.args["lng"]
+
 
     result = searcher.searchNodes(
         name,
